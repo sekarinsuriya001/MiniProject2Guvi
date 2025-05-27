@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.medicaldata</groupId>
-	<artifactId>medicSystemBackend</artifactId>
+	<artifactId>medicSystem</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>medicSystem</name>
 	<description>A Second Mini Project for Guvi HCL</description>
