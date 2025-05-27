@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confirm Logout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                'medical-blue': '#0077b6',
+                'medical-teal': '#00b4d8',
+                'medical-light': '#caf0f8',
+                'medical-dark': '#03045e',
+                'medical-danger': '#dc3545'
+              },
+              animation: {
+                fadeInDown: 'fadeInDown 0.7s ease-out',
+                bounceOnce: 'bounce 0.6s'
+              },
+              keyframes: {
+                fadeInDown: {
+                  '0%': { opacity: 0, transform: 'translateY(-20px)' },
+                  '100%': { opacity: 1, transform: 'translateY(0)' }
+                }
+              }
+            }
+          }
+        };
+    </script>
+</head>
+
+<body class="bg-gradient-to-br from-medical-light to-white min-h-screen flex items-center justify-center p-6">
+<div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-xl animate-fadeInDown">
+    <div class="text-center">
+        <header>
+            <h2 class="text-3xl font-bold text-medical-blue flex justify-center items-center gap-2">
+                <i class="fas fa-sign-out-alt text-xl text-medical-blue"></i> Confirm Logout
+            </h2>
+        </header>
+
+        <section class="mt-6">
+            <p class="text-gray-700 mb-6 text-lg flex items-center justify-center gap-2">
+                <i class="fas fa-question-circle text-medical-dark text-lg"></i> Are you sure you want to logout?
+            </p>
+
+            <form th:action="@{/logout}" method="post">
+                <button
+                        class="bg-medical-teal hover:bg-medical-blue text-white font-medium py-2 px-6 rounded-lg transition duration-200 hover:animate-pulse"
+                        type="submit">
+                    <i class="fas fa-check-circle mr-2"></i> Yes, Logout
+                </button>
+            </form>
+
+            <a th:href="@{/web/patients/home}"
+               class="inline-block mt-5 text-medical-blue hover:text-medical-dark hover:underline transition duration-200">
+                <i class="fas fa-home mr-1 hover:animate-bounce"></i> Return Home
+            </a>
+        </section>
+    </div>
+</div>
+</body>
+
+</html>

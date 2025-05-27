@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Medication | View</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            medical: {
+              blue: '#1A6FDF',
+              teal: '#0D9488',
+              green: '#10B981',
+              light: '#ECFDF5',
+              lighter: '#F0FDF4',
+              dark: '#0F172A',
+              pink: '#F472B6',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-medical-lighter p-6 min-h-screen transition-all duration-500 ease-in-out">
+<div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden p-8 animate-fade-in">
+  <div class="view-medication w-full">
+    <header class="mb-6">
+      <h4 class="text-3xl font-extrabold text-medical-blue flex items-center gap-2">
+        <i class="fas fa-notes-medical text-medical-green"></i> View Medication
+      </h4>
+      <p th:replace="~{general/patient-nav-bar::patient-navigation-bar}">Navigation links</p>
+    </header>
+
+    <section class="space-y-6">
+      <!-- ID and Name -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-medical-light p-5 rounded-xl shadow-sm hover:shadow-md transition">
+          <p class="text-sm font-medium text-medical-dark flex items-center gap-2"><i class="fas fa-id-badge"></i> Medication ID</p>
+          <p class="text-lg font-bold" th:text="${medicineDto.id}">ID</p>
+        </div>
+        <div class="bg-medical-light p-5 rounded-xl shadow-sm hover:shadow-md transition">
+          <p class="text-sm font-medium text-medical-dark flex items-center gap-2"><i class="fas fa-capsules"></i> Medicine Name</p>
+          <p class="text-lg font-bold" th:text="${medicineDto.medicine}">Medicine name</p>
+        </div>
+      </div>
+
+      <!-- Dosage and Frequency -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-medical-light p-5 rounded-xl shadow-sm hover:shadow-md transition">
+          <p class="text-sm font-medium text-medical-dark flex items-center gap-2"><i class="fas fa-pills"></i> Dosage</p>
+          <p class="text-lg" th:text="${medicineDto.dosage}">Dosage</p>
+        </div>
+        <div class="bg-medical-light p-5 rounded-xl shadow-sm hover:shadow-md transition">
+          <p class="text-sm font-medium text-medical-dark flex items-center gap-2"><i class="fas fa-clock"></i> Frequency</p>
+          <p class="text-lg" th:text="${medicineDto.frequency}">Frequency</p>
+        </div>
+      </div>
+
+      <!-- Status and Start Date -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-medical-light p-5 rounded-xl shadow-sm hover:shadow-md transition">
+          <p class="text-sm font-medium text-medical-dark flex items-center gap-2"><i class="fas fa-check-circle"></i> Status</p>
+          <p class="text-lg" th:text="${medicineDto.status}">Status</p>
+        </div>
+        <div class="bg-medical-light p-5 rounded-xl shadow-sm hover:shadow-md transition">
+          <p class="text-sm font-medium text-medical-dark flex items-center gap-2"><i class="fas fa-calendar-plus"></i> Start Date</p>
+          <p class="text-lg" th:text="${medicineDto.startDate}">Start date</p>
+        </div>
+      </div>
+
+      <!-- End Date and Prescription Date -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-medical-light p-5 rounded-xl shadow-sm hover:shadow-md transition">
+          <p class="text-sm font-medium text-medical-dark flex items-center gap-2"><i class="fas fa-calendar-times"></i> End Date</p>
+          <p class="text-lg" th:text="${medicineDto.endDate}">End date</p>
+        </div>
+        <div class="bg-medical-light p-5 rounded-xl shadow-sm hover:shadow-md transition">
+          <p class="text-sm font-medium text-medical-dark flex items-center gap-2"><i class="fas fa-file-medical"></i> Prescription Date</p>
+          <p class="text-lg" th:text="${medicineDto.prescriptionDate}">Prescription Date</p>
+        </div>
+      </div>
+
+      <!-- Updated Date -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-medical-light p-5 rounded-xl shadow-sm hover:shadow-md transition">
+          <p class="text-sm font-medium text-medical-dark flex items-center gap-2"><i class="fas fa-sync-alt"></i> Updated Date</p>
+          <p class="text-lg" th:text="${medicineDto.updatedDate}">Updated Date</p>
+        </div>
+      </div>
+
+      <!-- Note -->
+      <div class="bg-medical-light p-5 rounded-xl shadow-sm hover:shadow-md transition">
+        <p class="text-sm font-medium text-medical-dark flex items-center gap-2"><i class="fas fa-sticky-note"></i> Note</p>
+        <p class="text-lg whitespace-pre-line" th:text="${medicineDto.notes}">Note</p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<style>
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out;
+  }
+</style>
+</body>
+</html>

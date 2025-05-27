@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Medic System | Sign in</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'medical-primary': '#0077b6',
+            'medical-secondary': '#00b4d8',
+            'medical-success': '#28a745',
+            'medical-error': '#dc3545',
+            'medical-light': '#caf0f8'
+          },
+          animation: {
+            fadeIn: 'fadeIn 1s ease-in-out'
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: 0 },
+              '100%': { opacity: 1 }
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-gradient-to-br from-medical-light to-blue-100 min-h-screen flex items-center justify-center p-4">
+<div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md animate-fadeIn">
+  <header class="text-center mb-6">
+    <h4 class="text-3xl font-extrabold text-medical-primary tracking-wide">
+      <i class="fa-solid fa-user-md mr-2"></i>Patient Login
+    </h4>
+  </header>
+
+  <div th:if="${param.logout}" class="mb-4 p-3 bg-blue-100 text-blue-800 rounded-lg">
+    <i class="fa-solid fa-circle-check mr-2"></i>Signed out successfully!
+  </div>
+
+  <form action="#" method="post" th:action="@{/web/patients/login}" class="space-y-5">
+    <div>
+      <label for="phone" class="block text-gray-700 font-medium mb-1">
+        <i class="fa-solid fa-user mr-1 text-medical-primary"></i>Username
+      </label>
+      <input
+              id="phone"
+              name="username"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-secondary focus:border-medical-primary transition duration-300"
+              type="text"
+              placeholder="Enter your phone no."
+              autofocus="autofocus"
+              required
+      />
+    </div>
+
+    <div>
+      <label for="password" class="block text-gray-700 font-medium mb-1">
+        <i class="fa-solid fa-lock mr-1 text-medical-primary"></i>Password
+      </label>
+      <input
+              name="password"
+              type="password"
+              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-medical-secondary focus:border-medical-primary transition duration-300"
+              placeholder="Enter password"
+              required
+      />
+    </div>
+
+    <div th:if="${param.error}" class="p-3 bg-red-100 text-medical-error rounded-lg">
+      <i class="fa-solid fa-circle-exclamation mr-2"></i>Invalid username or password.
+    </div>
+
+    <button
+            type="submit"
+            class="w-full bg-medical-primary hover:bg-medical-secondary text-white font-bold py-2 px-4 rounded-lg transition-transform transform hover:scale-105 duration-200 shadow-md"
+    >
+      <i class="fa-solid fa-right-to-bracket mr-2"></i>Login
+    </button>
+  </form>
+
+  <div class="mt-6 text-center text-gray-600 space-y-2 text-sm">
+    <p>
+      Are you a new patient?
+      <a th:href="@{/web/patients/register}" class="text-medical-primary hover:underline font-medium">Register here</a>
+    </p>
+    <p>
+      Are you a new doctor?
+      <a th:href="@{/web/doctors/register}" class="text-medical-primary hover:underline font-medium">Register here</a>
+    </p>
+  </div>
+</div>
+</body>
+</html>

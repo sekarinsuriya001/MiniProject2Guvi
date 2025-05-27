@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Appointment Booking</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            medical: {
+              light: '#f0f9ff',
+              primary: '#0284c7',
+              dark: '#075985',
+              teal: '#0d9488',
+              lightteal: '#ccfbf1',
+              pink: '#ec4899',
+              bluegray: '#64748b',
+              sky: '#e0f2fe',
+              deepsky: '#bae6fd'
+            }
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'float': 'float 3s ease-in-out infinite',
+            'bounce-slow': 'bounce 2s infinite'
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-5px)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-gradient-to-br from-medical-light to-white min-h-screen p-4">
+<div class="max-w-4xl mx-auto bg-white rounded-xl shadow-2xl overflow-hidden p-8 animate__animated animate__fadeIn">
+  <div class="add-appointment w-full">
+    <header class="mb-6">
+      <div class="flex items-center gap-3 mb-2">
+        <div class="p-3 bg-gradient-to-r from-medical-primary to-medical-teal rounded-lg shadow-md">
+          <i class="fa-solid fa-calendar-plus text-white text-2xl"></i>
+        </div>
+        <h4 class="text-3xl font-extrabold bg-gradient-to-r from-medical-primary to-medical-teal bg-clip-text text-transparent">
+          Book a New Appointment
+        </h4>
+      </div>
+      <p th:replace="~{general/patient-nav-bar::patient-navigation-bar}">
+        Navigation links
+      </p>
+    </header>
+
+    <section>
+      <form
+              id="appointmentForm"
+              th:action="@{/web/appointments/book}"
+              th:object="${appointment}"
+              method="post"
+              class="space-y-6"
+      >
+        <!-- Speciality -->
+        <div class="bg-medical-sky p-4 rounded-lg border-l-4 border-medical-primary transition-all duration-300 hover:shadow-md">
+          <label for="speciality" class="block text-sm font-semibold text-gray-700 mb-1">
+            <i class="fa-solid fa-stethoscope text-medical-primary mr-2"></i> Select Speciality:
+          </label>
+          <select
+                  id="speciality"
+                  name="speciality"
+                  required
+                  autofocus
+                  class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm py-2 px-3 focus:ring-2 focus:ring-medical-primary focus:border-medical-primary transition duration-300 border-0 bg-white"
+          >
+            <option value="" disabled selected>Select a speciality</option>
+            <option
+                    th:each="speciality : ${specialties}"
+                    th:value="${speciality}"
+                    th:text="${speciality}"
+            >
+              Speciality1
+            </option>
+          </select>
+        </div>
+
+        <div class="flex items-center bg-medical-lightteal p-3 rounded-lg border-l-4 border-medical-teal animate-pulse-slow">
+          <i class="fa-solid fa-info-circle text-medical-teal text-xl mr-3"></i>
+          <p class="text-sm text-gray-700">
+            After selecting a speciality, pick a doctor to view available slots.
+          </p>
+        </div>
+
+        <!-- Doctor Cards -->
+        <div id="doctorContainer" class="flex flex-wrap gap-4 animate__animated animate__fadeInUp"></div>
+
+        <!-- Date Picker -->
+        <div class="bg-medical-sky p-4 rounded-lg border-l-4 border-medical-primary transition-all duration-300 hover:shadow-md">
+          <label for="date" class="block text-sm font-semibold text-gray-700 mb-1">
+            <i class="fa-solid fa-calendar-day text-medical-primary mr-2"></i> Select Date:
+          </label>
+          <div class="relative">
+            <input
+                    type="date"
+                    id="date"
+                    name="date"
+                    required
+                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm py-2 px-3 focus:ring-2 focus:ring-medical-primary focus:border-medical-primary transition duration-300 border-0 bg-white"
+            />
+            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+              <i class="fa-regular fa-calendar text-medical-primary"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- View Slots -->
+        <button
+                type="button"
+                id="checkSlots"
+                class="w-full bg-gradient-to-r from-medical-primary to-medical-teal hover:from-medical-dark hover:to-medical-dark text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl transform hover:scale-[1.02] group"
+        >
+          <i class="fa-solid fa-clock-rotate-left mr-2 group-hover:rotate-180 transition-transform duration-500"></i>
+          View Available Slots
+        </button>
+
+        <!-- Slot Options -->
+        <div id="slotsContainer" class="flex flex-wrap gap-4 mt-4 animate__animated animate__fadeIn"></div>
+
+        <input type="hidden" th:field="*{doctorId}" id="doctorId" />
+        <input type="hidden" th:field="*{patientId}" th:text="${patientId}" />
+
+        <!-- Submit -->
+        <button
+                type="submit"
+                id="submitBtn"
+                class="w-full bg-gradient-to-r from-medical-teal to-medical-primary hover:from-medical-dark hover:to-medical-dark text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl transform hover:scale-[1.02] group"
+                disabled
+        >
+          <i class="fa-solid fa-paper-plane mr-2 group-hover:animate-bounce-slow"></i>
+          <span class="group-hover:underline">Confirm Appointment</span>
+        </button>
+      </form>
+    </section>
+  </div>
+</div>
+
+<script>
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('date').setAttribute('min', today);
+
+  $(document).ready(function () {
+    $("#speciality").change(function () {
+      $.post("/web/appointments/doctors", { speciality: $(this).val() }, function (data) {
+        $("#doctorContainer").empty();
+
+        if (data.length === 0) {
+          $("#doctorContainer").html(`
+            <div class="w-full bg-medical-lightteal p-4 rounded-lg border-l-4 border-medical-teal animate-float">
+              <div class="flex items-center">
+                <i class="fa-solid fa-user-doctor text-medical-teal text-2xl mr-3"></i>
+                <p class="text-gray-700">No doctors available for this specialty at the moment.</p>
+              </div>
+            </div>
+          `);
+          return;
+        }
+
+        $.each(data, function (i, doctor) {
+          $("#doctorContainer").append(`
+            <div class="w-full sm:w-1/2 md:w-1/3 lg:w-1/4 animate__animated animate__zoomIn">
+              <div class="bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 border border-gray-200 group">
+                <div class="p-4">
+                  <div class="flex items-center mb-2">
+                    <div class="w-10 h-10 bg-medical-sky rounded-full flex items-center justify-center mr-3">
+                      <i class="fa-solid fa-user-md text-medical-primary"></i>
+                    </div>
+                    <h5 class="text-lg font-bold text-medical-primary group-hover:text-medical-dark transition-colors">
+                      Dr. ${doctor.firstName} ${doctor.lastName}
+                    </h5>
+                  </div>
+                  <div class="space-y-2 text-sm text-gray-600">
+                    <p class="flex items-center">
+                      <i class="fa-solid fa-award text-medical-teal mr-2 w-4"></i>
+                      <span>${doctor.experienceInYears} yrs experience</span>
+                    </p>
+                    <p class="flex items-center">
+                      <i class="fa-solid fa-graduation-cap text-medical-teal mr-2 w-4"></i>
+                      <span>${doctor.qualifications}</span>
+                    </p>
+                    <p class="flex items-center">
+                      <i class="fa-solid fa-language text-medical-teal mr-2 w-4"></i>
+                      <span>${doctor.languagesSpoken}</span>
+                    </p>
+                  </div>
+                  <button type="button"
+                    class="mt-4 w-full bg-gradient-to-r from-medical-primary to-medical-teal hover:from-medical-dark hover:to-medical-dark text-white font-medium py-2 px-3 rounded-lg transition-all duration-300 select-doctor"
+                    data-doctor-id="${doctor.id}">
+                    <i class="fa-solid fa-hand-pointer mr-1"></i> Select Doctor
+                  </button>
+                </div>
+              </div>
+            </div>
+          `);
+        });
+      });
+    });
+
+    // Handle "View Slots"
+    $("#checkSlots").click(function () {
+      const doctorId = $(".select-doctor.active").data("doctor-id");
+      const date = $("#date").val();
+
+      if (!doctorId) {
+        showAlert("Please select a doctor first", "error");
+        return;
+      }
+      if (!date) {
+        showAlert("Please select a date", "error");
+        return;
+      }
+
+      // Show loading state
+      $(this).html('<i class="fa-solid fa-spinner fa-spin mr-2"></i> Checking Slots...');
+      $(this).prop('disabled', true);
+
+      $.post("/web/appointments/checkSlots", { doctorId, date }, function (slots) {
+        $("#slotsContainer").empty();
+        $("#checkSlots").html('<i class="fa-solid fa-clock-rotate-left mr-2"></i> View Available Slots');
+        $("#checkSlots").prop('disabled', false);
+
+        if (slots.length === 0) {
+          $("#slotsContainer").append(`
+            <div class="w-full bg-medical-lightteal p-4 rounded-lg border-l-4 border-medical-teal">
+              <div class="flex items-center">
+                <i class="fa-solid fa-clock text-medical-teal text-xl mr-3"></i>
+                <p class="text-gray-700">No available slots for this date.</p>
+              </div>
+            </div>
+          `);
+          return;
+        }
+
+        $.each(slots, function (i, slot) {
+          const disabled = slot.booked ? "disabled" : "";
+          const style = slot.booked ?
+            "text-gray-400 bg-gray-100 border-gray-200" :
+            "text-gray-700 bg-white hover:bg-medical-sky border-gray-300 hover:border-medical-primary";
+          const icon = slot.booked ?
+            "fa-solid fa-lock text-gray-400" :
+            "fa-regular fa-clock text-medical-primary";
+
+          $("#slotsContainer").append(`
+            <div class="w-full sm:w-1/3 md:w-1/4 animate__animated animate__fadeIn">
+              <label class="block cursor-pointer">
+                <input type="radio" name="appointmentDateTime" value="${date}T${slot.time}" ${disabled}
+                  class="hidden peer">
+                <div class="p-3 border rounded-lg transition-all duration-200 peer-checked:border-medical-primary peer-checked:ring-2 peer-checked:ring-medical-primary peer-checked:bg-medical-sky ${style}">
+                  <div class="flex items-center">
+                    <i class="${icon} mr-2"></i>
+                    <span>${slot.displayString}</span>
+                    ${slot.booked ? '<span class="ml-auto text-xs text-gray-500">Booked</span>' : ''}
+                  </div>
+                </div>
+              </label>
+            </div>
+          `);
+        });
+
+        // Enable submit button when slots are loaded
+        $("#submitBtn").prop('disabled', false);
+      }).fail(() => {
+        showAlert("Error checking slots. Please try again.", "error");
+        $("#checkSlots").html('<i class="fa-solid fa-clock-rotate-left mr-2"></i> View Available Slots');
+        $("#checkSlots").prop('disabled', false);
+      });
+    });
+
+    // Doctor selection
+    $(document).on("click", ".select-doctor", function () {
+      $(".select-doctor").removeClass("active from-medical-dark to-medical-dark").addClass("from-medical-primary to-medical-teal");
+      $(this).removeClass("from-medical-primary to-medical-teal").addClass("active from-medical-dark to-medical-dark");
+
+      $(".bg-medical-lightteal").removeClass("bg-medical-lightteal");
+      $(this).closest(".rounded-xl").addClass("bg-medical-lightteal");
+
+      $("#doctorId").val($(this).data("doctor-id"));
+
+      // Show success feedback
+      const doctorName = $(this).closest(".rounded-xl").find("h5").text();
+      showAlert(`Selected ${doctorName}`, "success");
+    });
+
+    // Show alert function
+    function showAlert(message, type) {
+      const alertDiv = $(`
+        <div class="fixed top-4 right-4 z-50 animate__animated animate__fadeInRight">
+          <div class="p-4 rounded-lg shadow-lg ${type === 'error' ? 'bg-red-100 border-l-4 border-red-500' : 'bg-green-100 border-l-4 border-green-500'}">
+            <div class="flex items-center">
+              <i class="fa-solid ${type === 'error' ? 'fa-circle-exclamation text-red-500' : 'fa-circle-check text-green-500'} mr-2"></i>
+              <span class="text-gray-800">${message}</span>
+            </div>
+          </div>
+        </div>
+      `);
+
+      $("body").append(alertDiv);
+      setTimeout(() => {
+        alertDiv.addClass("animate__fadeOutRight");
+        setTimeout(() => alertDiv.remove(), 500);
+      }, 3000);
+    }
+
+    // Enable date picker animation
+    $("input[type='date']").on("focus", function() {
+      $(this).parent().addClass("ring-2 ring-medical-primary");
+    }).on("blur", function() {
+      $(this).parent().removeClass("ring-2 ring-medical-primary");
+    });
+  });
+</script>
+
+<style>
+  /* Custom checkbox/radio styling */
+  input[type="radio"]:checked + div {
+    box-shadow: 0 0 0 2px #0284c7;
+  }
+
+  /* Smooth transitions for doctor cards */
+  .doctor-card {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  }
+
+  /* Gradient underline for headings */
+  .gradient-underline {
+    position: relative;
+  }
+
+  .gradient-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, #0284c7, #0d9488);
+  }
+
+  /* Pulse animation for important elements */
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.4); }
+    50% { box-shadow: 0 0 0 10px rgba(2, 132, 199, 0); }
+  }
+
+  .pulse-glow {
+    animation: pulse-glow 2s infinite;
+  }
+</style>
+</body>
+</html>

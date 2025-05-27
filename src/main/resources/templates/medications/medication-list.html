@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Medications</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            medical: {
+              blue: '#1A6FDF',
+              teal: '#0D9488',
+              green: '#10B981',
+              light: '#F0FDF4',
+              dark: '#0F172A',
+              bg: '#E6F4F1',
+            }
+          },
+          animation: {
+            fadeIn: "fadeIn 1s ease-in-out forwards",
+            bounceIn: "bounceIn 0.6s ease-out"
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: 0, transform: 'scale(0.95)' },
+              '100%': { opacity: 1, transform: 'scale(1)' },
+            },
+            bounceIn: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-4px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gradient-to-tr from-medical-light to-medical-bg min-h-screen p-4">
+<div class="max-w-full mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-8 animate-fadeIn">
+  <header>
+    <h4 class="text-3xl font-extrabold text-medical-blue flex items-center gap-2 my-4">
+      <i class="fas fa-pills"></i> Medications
+    </h4>
+    <p th:replace="~{general/patient-nav-bar::patient-navigation-bar}">
+      Navigation links
+    </p>
+  </header>
+
+  <section class="mt-6">
+    <div class="add-medicine mb-6">
+      <button
+              class="bg-medical-green hover:bg-green-600 hover:scale-105 transition-transform duration-200 text-white font-semibold py-2 px-5 rounded shadow animate-bounceIn"
+              th:onclick="|window.location.href='@{/web/medications/add-medication}'|"
+      >
+        <i class="fas fa-circle-plus mr-2"></i>Add medicine
+      </button>
+    </div>
+
+    <div th:if="${isEmpty}" class="text-center py-10 text-gray-500">
+      <p><i class="fas fa-box-open text-2xl text-gray-400 mb-2"></i><br>No medicines exist. Add one to display.</p>
+    </div>
+
+    <div th:unless="${isEmpty}" class="overflow-x-auto">
+      <div class="min-w-full">
+        <table class="min-w-full divide-y divide-gray-300 rounded-lg overflow-hidden shadow-sm">
+          <thead class="bg-medical-light">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">S.No</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">Medicine</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">Dosage</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">Frequency</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">Start date</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">End date</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">Prescribed</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">Updated</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">Note</th>
+            <th class="px-6 py-3 text-left text-xs font-bold text-gray-600 uppercase">Actions</th>
+          </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+          <tr th:each="med, iterStat : ${medicineList}" class="hover:bg-gray-100 transition duration-150 ease-in-out">
+            <td class="px-6 py-4 text-sm text-gray-500" th:text="${iterStat.count}">1</td>
+            <td class="px-6 py-4 text-sm font-medium text-gray-900" th:text="${med.medicine}">Medicine name</td>
+            <td class="px-6 py-4 text-sm text-gray-500" th:text="${med.dosage}">Dosage</td>
+            <td class="px-6 py-4 text-sm text-gray-500" th:text="${med.frequency}">Frequency</td>
+            <td class="px-6 py-4 text-sm text-gray-500" th:text="${med.status}">Status</td>
+            <td class="px-6 py-4 text-sm text-gray-500" th:text="${med.startDate}">Start</td>
+            <td class="px-6 py-4 text-sm text-gray-500" th:text="${med.endDate}">End</td>
+            <td class="px-6 py-4 text-sm text-gray-500" th:text="${med.prescriptionDate}">Prescribed</td>
+            <td class="px-6 py-4 text-sm text-gray-500" th:text="${med.updatedDate}">Updated</td>
+            <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate" th:text="${med.notes}">Note</td>
+            <td class="px-6 py-4 text-sm font-medium space-x-2">
+              <button
+                      class="bg-medical-blue hover:bg-blue-700 hover:scale-105 transition-transform duration-150 text-white py-1 px-3 rounded text-xs"
+                      th:onclick="|window.location.href='@{/web/medications/update-medication/{id}(id=${med.id})}'|"
+              >
+                <i class="fas fa-pen mr-1"></i>Update
+              </button>
+              <button
+                      class="bg-red-500 hover:bg-red-700 hover:scale-105 transition-transform duration-150 text-white py-1 px-3 rounded text-xs"
+                      th:onclick="|window.location.href='@{/web/medications/delete/{id}(id=${med.id})}'|"
+              >
+                <i class="fas fa-trash mr-1"></i>Delete
+              </button>
+              <button
+                      class="bg-medical-teal hover:bg-teal-700 hover:scale-105 transition-transform duration-150 text-white py-1 px-3 rounded text-xs"
+                      th:onclick="|window.location.href='@{/web/medications/view/{id}(id=${med.id})}'|"
+              >
+                <i class="fas fa-eye mr-1"></i>View
+              </button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+<footer class="text-center mt-10 text-gray-600 py-4 text-sm">
+  <p><i class="fas fa-heartbeat text-medical-teal mr-1"></i>© 2025 Medic System. Your health, our commitment.</p>
+</footer>
+</body>
+</html>

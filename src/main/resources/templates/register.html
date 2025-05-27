@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register - Medic System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'medical-primary': '#0077b6',
+            'medical-secondary': '#00b4d8',
+            'medical-success': '#28a745',
+            'medical-error': '#dc3545',
+            'medical-light': '#caf0f8',
+            'medical-dark': '#03045e'
+          },
+          animation: {
+            fade: 'fadeIn 0.8s ease-out'
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: 0, transform: 'translateY(20px)' },
+              '100%': { opacity: 1, transform: 'translateY(0)' }
+            }
+          }
+        }
+      }
+    };
+  </script>
+</head>
+
+<body class="bg-gradient-to-br from-medical-light to-blue-100 min-h-screen flex items-center justify-center p-4">
+<div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-2xl animate-fade">
+  <div class="w-full">
+    <header class="text-center">
+      <h4 class="text-2xl font-bold text-medical-primary">
+        <i class="fas fa-user-plus mr-2"></i>Patient Registration
+      </h4>
+    </header>
+
+    <section class="mt-6 space-y-4">
+      <!-- Feedback Messages -->
+      <div th:if="${param.success}" class="bg-medical-success text-white p-3 rounded-lg animate-fade">
+        <i class="fas fa-check-circle mr-2"></i>You are successfully registered!<br>Your phone number is your username.
+      </div>
+      <div th:if="${param.mobileAlreadyExists}" class="bg-medical-error text-white p-3 rounded-lg animate-fade">
+        <i class="fas fa-exclamation-triangle mr-2"></i>A patient already exists with the provided mobile number.<br>Enter a valid one.
+      </div>
+
+      <!-- Registration Form -->
+      <form action="#" onsubmit="return validatePassword()" th:action="@{/web/patients/savePatient}" th:object="${newPatient}" method="post" class="space-y-8">
+
+        <!-- Sections -->
+        <div class="space-y-6">
+
+          <!-- Personal Information -->
+          <div>
+            <h5 class="text-lg font-semibold text-medical-primary mb-2">
+              <i class="fas fa-id-card mr-2"></i>Personal Information
+            </h5>
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label class="block font-medium text-gray-700">First Name</label>
+                <input th:field="*{firstName}" required placeholder="John" class="form-input" />
+              </div>
+              <div>
+                <label class="block font-medium text-gray-700">Last Name</label>
+                <input th:field="*{lastName}" required placeholder="Doe" class="form-input" />
+              </div>
+              <div>
+                <label class="block font-medium text-gray-700">Email</label>
+                <input type="email" th:field="*{email}" required placeholder="jdoe@gmail.com" class="form-input" />
+              </div>
+              <div>
+                <label class="block font-medium text-gray-700">Phone</label>
+                <input th:field="*{mobile}" required placeholder="9876543210" class="form-input" />
+              </div>
+              <div>
+                <label class="block font-medium text-gray-700">Address</label>
+                <input th:field="*{address}" required placeholder="Georgetown, USA" class="form-input" />
+              </div>
+              <div>
+                <label class="block font-medium text-gray-700">Age</label>
+                <input type="number" min="1" th:field="*{age}" required placeholder="25" class="form-input" />
+              </div>
+              <div>
+                <span class="block font-medium text-gray-700">Gender</span>
+                <div class="flex space-x-4 mt-1">
+                  <label class="inline-flex items-center">
+                    <input type="radio" th:field="*{gender}" value="Male" required class="text-medical-primary" />
+                    <span class="ml-2">Male</span>
+                  </label>
+                  <label class="inline-flex items-center">
+                    <input type="radio" th:field="*{gender}" value="Female" required class="text-medical-primary" />
+                    <span class="ml-2">Female</span>
+                  </label>
+                </div>
+              </div>
+              <div>
+                <label class="block font-medium text-gray-700">Blood Group</label>
+                <input th:field="*{bloodGroup}" required placeholder="A+" class="form-input" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Emergency Contact -->
+          <div>
+            <h5 class="text-lg font-semibold text-medical-primary mb-2">
+              <i class="fas fa-phone-alt mr-2"></i>Emergency Contact
+            </h5>
+            <div class="grid md:grid-cols-3 gap-4">
+              <input th:field="*{emergencyContactName}" required placeholder="Name" class="form-input" />
+              <input th:field="*{emergencyContactMobile}" required placeholder="Mobile" class="form-input" />
+              <input th:field="*{emergencyContactRelation}" required placeholder="Relation" class="form-input" />
+            </div>
+          </div>
+
+          <!-- Medical History -->
+          <div>
+            <h5 class="text-lg font-semibold text-medical-primary mb-2">
+              <i class="fas fa-notes-medical mr-2"></i>Medical History
+            </h5>
+            <textarea th:field="*{previousDiagnoses}" required placeholder="Previous Diagnoses" class="form-textarea"></textarea>
+            <textarea th:field="*{surgeries}" required placeholder="Surgeries" class="form-textarea"></textarea>
+            <textarea th:field="*{allergies}" required placeholder="Allergies" class="form-textarea"></textarea>
+            <textarea th:field="*{vaccinationHistory}" required placeholder="Vaccination History" class="form-textarea"></textarea>
+          </div>
+
+          <!-- Lifestyle -->
+          <div>
+            <h5 class="text-lg font-semibold text-medical-primary mb-2">
+              <i class="fas fa-heartbeat mr-2"></i>Lifestyle
+            </h5>
+            <div class="flex flex-col gap-2">
+              <label>Do you smoke?</label>
+              <div class="flex space-x-4">
+                <label><input type="radio" th:field="*{isSmoker}" value="true" class="text-medical-primary" required /> Yes</label>
+                <label><input type="radio" th:field="*{isSmoker}" value="false" class="text-medical-primary" required /> No</label>
+              </div>
+              <label>Do you consume alcohol?</label>
+              <div class="flex space-x-4">
+                <label><input type="radio" th:field="*{consumesAlcohol}" value="true" class="text-medical-primary" required /> Yes</label>
+                <label><input type="radio" th:field="*{consumesAlcohol}" value="false" class="text-medical-primary" required /> No</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div>
+            <h5 class="text-lg font-semibold text-medical-primary mb-2">
+              <i class="fas fa-lock mr-2"></i>Account Security
+            </h5>
+            <input id="password" type="password" required placeholder="Password" class="form-input" />
+            <input id="password2" th:field="*{password}" type="password" required placeholder="Confirm Password" class="form-input" />
+            <span id="error-message" class="text-medical-error hidden block mt-1 font-medium"></span>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="w-full bg-medical-primary hover:bg-medical-secondary text-white font-bold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105">
+          <i class="fas fa-user-check mr-2"></i>Sign Up
+        </button>
+      </form>
+
+      <p class="text-center mt-4 text-gray-600">
+        Already registered?
+        <a th:href="@{/web/patients/login}" class="text-medical-primary hover:underline">Login here!</a>
+      </p>
+    </section>
+  </div>
+</div>
+
+<!-- JS Password Validation -->
+<script>
+  function validatePassword() {
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("password2").value;
+    const errorMessage = document.getElementById("error-message");
+
+    const pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+]).{8,}$/;
+    if (!pattern.test(password)) {
+      errorMessage.textContent = "Password must be at least 8 characters and include uppercase, lowercase, number, and special character.";
+      errorMessage.classList.remove("hidden");
+      return false;
+    }
+    if (password !== confirmPassword) {
+      errorMessage.textContent = "Passwords do not match.";
+      errorMessage.classList.remove("hidden");
+      return false;
+    }
+    errorMessage.classList.add("hidden");
+    return true;
+  }
+
+  // Utility class for inputs/textareas
+  document.querySelectorAll("input.form-input, textarea.form-textarea").forEach(el => {
+    el.classList.add(
+      "w-full", "px-4", "py-2", "border", "border-gray-300", "rounded-lg",
+      "focus:outline-none", "focus:ring-2", "focus:ring-medical-secondary",
+      "focus:border-medical-primary", "transition", "duration-200"
+    );
+  });
+</script>
+</body>
+</html>

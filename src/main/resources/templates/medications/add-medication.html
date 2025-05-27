@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medication | Add</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        medical: {
+                            blue: '#1A6FDF',
+                            teal: '#0D9488',
+                            green: '#10B981',
+                            light: '#F0FDF4',
+                            dark: '#0F172A',
+                            gradientStart: '#E0F7FA',
+                            gradientEnd: '#B2EBF2',
+                            pillBlue: '#E3F2FD',
+                            pillGreen: '#E8F5E9'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, theme('colors.medical.gradientStart'), theme('colors.medical.gradientEnd'));
+        }
+        .pill-icon {
+            transition: all 0.3s ease;
+        }
+        .pill-icon:hover {
+            transform: scale(1.1) rotate(10deg);
+        }
+        .form-input:focus {
+            box-shadow: 0 0 0 3px rgba(26, 111, 223, 0.2);
+        }
+        .btn-hover-effect:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px rgba(16, 185, 129, 0.6);
+        }
+    </style>
+</head>
+
+<body class="gradient-bg min-h-screen p-4">
+<!-- Floating animated elements -->
+<div class="fixed top-20 left-10 opacity-20 animate-float">
+    <i class="fas fa-pills text-medical-blue text-6xl"></i>
+</div>
+<div class="fixed bottom-20 right-10 opacity-20 animate-float" style="animation-delay: 1s;">
+    <i class="fas fa-prescription-bottle-alt text-medical-teal text-6xl"></i>
+</div>
+
+<div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-8 animate__animated animate__fadeInUp">
+    <div class="add-medication w-full">
+        <header class="mb-8">
+            <div class="flex items-center space-x-4 mb-4">
+                <div class="bg-medical-pillBlue p-3 rounded-full shadow-md pill-icon">
+                    <i class="fas fa-pills text-medical-blue text-2xl"></i>
+                </div>
+                <h4 class="text-3xl font-bold text-medical-dark">Add a new Medicine</h4>
+            </div>
+            <p th:replace="~{general/patient-nav-bar::patient-navigation-bar}">Navigation links</p>
+        </header>
+
+        <section class="animate__animated animate__fadeIn animate__delay-1s">
+            <div>
+                <form action="#" th:action="@{/web/medications/add}" th:object="${medicineDto}" method="post" class="space-y-6">
+                    <div class="bg-medical-pillGreen p-4 rounded-lg transition-all duration-300 hover:shadow-md">
+                        <label for="medicine-name" class="block text-sm font-medium text-medical-dark flex items-center">
+                            <i class="fas fa-capsules mr-2 text-medical-teal"></i>
+                            <strong>Medicine Name:</strong>
+                        </label>
+                        <input type="text" id="medicine-name" class="form-input mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-medical-blue focus:ring focus:ring-medical-blue focus:ring-opacity-50 p-3 border"
+                               placeholder="eg. Dolo" th:field="*{medicine}" required autofocus>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-medical-pillBlue p-4 rounded-lg transition-all duration-300 hover:shadow-md">
+                            <label for="dosage" class="block text-sm font-medium text-medical-dark flex items-center">
+                                <i class="fas fa-weight-hanging mr-2 text-medical-blue"></i>
+                                <strong>Dosage:</strong>
+                            </label>
+                            <input type="text" id="dosage" class="form-input mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-medical-blue focus:ring focus:ring-medical-blue focus:ring-opacity-50 p-3 border"
+                                   placeholder="eg. 650 mg" th:field="*{dosage}" required>
+                        </div>
+
+                        <div class="bg-medical-pillBlue p-4 rounded-lg transition-all duration-300 hover:shadow-md">
+                            <label for="frequency" class="block text-sm font-medium text-medical-dark flex items-center">
+                                <i class="fas fa-clock mr-2 text-medical-blue"></i>
+                                <strong>Frequency:</strong>
+                            </label>
+                            <input type="text" id="frequency" class="form-input mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-medical-blue focus:ring focus:ring-medical-blue focus:ring-opacity-50 p-3 border"
+                                   placeholder="eg. Twice a day" th:field="*{frequency}" required>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-lg transition-all duration-300 hover:shadow-md">
+                            <span class="block text-sm font-medium text-medical-dark flex items-center">
+                                <i class="fas fa-info-circle mr-2 text-medical-blue"></i>
+                                <strong>Status</strong>
+                            </span>
+                        <div class="mt-2 space-x-4 p-3 border rounded-md bg-white">
+                            <label class="inline-flex items-center">
+                                <input id="statusActive" type="radio" name="status" th:field="*{status}" value="Active" class="text-medical-blue focus:ring-medical-blue h-5 w-5"/>
+                                <span class="ml-2 text-medical-dark">Active</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input id="statusCompleted" type="radio" name="status" th:field="*{status}" value="Completed" class="text-medical-blue focus:ring-medical-blue h-5 w-5"/>
+                                <span class="ml-2 text-medical-dark">Completed</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input id="statusHold" type="radio" name="status" th:field="*{status}" value="Hold" class="text-medical-blue focus:ring-medical-blue h-5 w-5"/>
+                                <span class="ml-2 text-medical-dark">Hold</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-medical-pillGreen p-4 rounded-lg transition-all duration-300 hover:shadow-md">
+                            <label for="start-date" class="block text-sm font-medium text-medical-dark flex items-center">
+                                <i class="far fa-calendar-check mr-2 text-medical-teal"></i>
+                                <strong>Start date:</strong>
+                            </label>
+                            <input type="date" id="start-date" class="form-input mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-medical-blue focus:ring focus:ring-medical-blue focus:ring-opacity-50 p-3 border"
+                                   th:field="*{startDate}" required>
+                        </div>
+
+                        <div class="bg-medical-pillGreen p-4 rounded-lg transition-all duration-300 hover:shadow-md">
+                            <label for="end-date" class="block text-sm font-medium text-medical-dark flex items-center">
+                                <i class="far fa-calendar-times mr-2 text-medical-teal"></i>
+                                <strong>End date:</strong>
+                            </label>
+                            <input type="date" id="end-date" class="form-input mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-medical-blue focus:ring focus:ring-medical-blue focus:ring-opacity-50 p-3 border"
+                                   th:field="*{endDate}" required>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-lg transition-all duration-300 hover:shadow-md">
+                        <label for="notes" class="block text-sm font-medium text-medical-dark flex items-center">
+                            <i class="fas fa-sticky-note mr-2 text-medical-blue"></i>
+                            <strong>Notes:</strong>
+                        </label>
+                        <textarea id="notes" class="form-input mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-medical-blue focus:ring focus:ring-medical-blue focus:ring-opacity-50 p-3 border"
+                                  rows="4" placeholder="eg. To take 5 minutes after having food." th:field="*{notes}" required></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-medical-green hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300 btn-hover-effect flex items-center justify-center space-x-2">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Add Medicine</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+    </div>
+</div>
+
+<script>
+    // Add animation on form inputs focus
+    document.querySelectorAll('input, textarea').forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('ring-2', 'ring-medical-blue', 'ring-opacity-50');
+            this.parentElement.classList.remove('hover:shadow-md');
+        });
+
+        input.addEventListener('blur', function() {
+            this.parentElement.classList.remove('ring-2', 'ring-medical-blue', 'ring-opacity-50');
+            this.parentElement.classList.add('hover:shadow-md');
+        });
+    });
+</script>
+</body>
+</html>

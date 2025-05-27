@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Appointments</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            medical: {
+              light: '#f0f9ff',
+              primary: '#0284c7',
+              dark: '#075985',
+              teal: '#0d9488',
+              lightteal: '#ccfbf1',
+              blue: '#0369a1',
+              lightblue: '#e0f2fe'
+            }
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'fade-in': 'fadeIn 0.5s ease-in',
+            'slide-up': 'slideUp 0.3s ease-out'
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' }
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(20px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+
+<body class="bg-gradient-to-br from-medical-lightblue to-white min-h-screen p-4">
+<div class="max-w-7xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden p-8 transition-all duration-300 hover:shadow-xl">
+  <div class="w-full">
+    <header class="animate-fade-in">
+      <h4 class="text-medical-blue text-3xl font-bold mb-4 relative inline-block">
+        <span class="relative z-10">Appointments</span>
+        <span class="absolute -bottom-1 left-0 w-full h-2 bg-medical-lightteal opacity-50 rounded-full"></span>
+      </h4>
+      <p th:replace="~{general/patient-nav-bar::patient-navigation-bar}">
+        Navigation links
+      </p>
+    </header>
+    <section class="mt-6 animate-slide-up">
+      <div class="book-appointment-button mb-6">
+        <button class="bg-gradient-to-r from-medical-teal to-medical-blue hover:from-medical-blue hover:to-medical-dark text-white font-medium py-3 px-6 rounded-lg transition-all duration-300 ease-in-out transform hover:scale-105 shadow-md hover:shadow-lg flex items-center gap-2">
+          <i class="fas fa-calendar-plus"></i>
+          <span th:onclick="|window.location.href='@{/web/appointments/add-appointment}'|">Book an appointment</span>
+        </button>
+      </div>
+
+      <div th:if="${noUpcomingAppointments}" class="bg-medical-lightteal p-4 rounded-lg border-l-4 border-medical-teal animate-pulse-slow">
+        <p class="text-gray-700 flex items-center gap-2">
+          <i class="fas fa-info-circle text-medical-teal"></i>
+          No upcoming appointments exist. Add one to display.
+        </p>
+      </div>
+
+      <div th:unless="${noUpcomingAppointments}">
+        <div class="w-full">
+          <h5 class="text-xl font-semibold text-medical-blue mb-3 flex items-center gap-2">
+            <i class="fas fa-calendar-check"></i>
+            Upcoming appointments
+          </h5>
+          <p class="text-gray-600 mb-4">These are your upcoming appointments:</p>
+          <div class="overflow-x-auto">
+            <table class="min-w-full bg-white rounded-lg overflow-hidden border border-medical-lightblue">
+              <thead class="bg-gradient-to-r from-medical-primary to-medical-blue text-white">
+              <tr>
+                <th class="py-3 px-4 text-left">S.No</th>
+                <th class="py-3 px-4 text-left">Appointment Id</th>
+                <th class="py-3 px-4 text-left">Doctor name</th>
+                <th class="py-3 px-4 text-left">Doctor speciality</th>
+                <th class="py-3 px-4 text-left">Doctor details</th>
+                <th class="py-3 px-4 text-left">Appointment Date and Time</th>
+                <th class="py-3 px-4 text-left">Appointment created at</th>
+                <th class="py-3 px-4 text-left">Action</th>
+              </tr>
+              </thead>
+              <tbody class="divide-y divide-medical-lightblue">
+              <tr th:each="appointment, iterStat : ${upcomingAppointments}"
+                  class="hover:bg-medical-lightblue transition-colors duration-200">
+                <td class="py-3 px-4" th:text="${iterStat.count}">1</td>
+                <td class="py-3 px-4" th:text="${appointment.id}">1</td>
+                <td class="py-3 px-4 font-medium" th:text="${appointment.doctorDto.firstName}">
+                  Doctor name
+                </td>
+                <td class="py-3 px-4" th:text="${appointment.doctorDto.speciality}">
+                  Doctor speciality
+                </td>
+                <td class="py-3 px-4">
+                  <button class="bg-medical-primary hover:bg-medical-dark text-white text-sm font-medium py-1 px-3 rounded-md transition-all duration-200 ease-in-out hover:shadow-md flex items-center gap-1"
+                          type="button"
+                          th:data-modal-target="'#doctorModal' + ${appointment.doctorDto.id}">
+                    <i class="fas fa-eye"></i> view
+                  </button>
+
+                  <!-- Modal (unchanged as requested) -->
+                  <div class="fixed inset-0 flex items-center justify-center z-50 hidden"
+                       th:id="'doctorModal' + ${appointment.doctorDto.id}"
+                       aria-labelledby="'modalTitle' + ${appointment.doctorDto.id}"
+                       aria-hidden="true">
+                    <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+                    <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+                      <div class="modal-content py-4 text-left px-6">
+                        <div class="flex justify-between items-center pb-3">
+                          <h5 class="text-xl font-bold text-medical-primary"
+                              th:id="'modalTitle' + ${appointment.doctorDto.id}"
+                              th:text="'Details of Dr.' + ${appointment.doctorDto.firstName}">
+                            Doctor details
+                          </h5>
+                          <button class="modal-close cursor-pointer z-50" onclick="closeModal(this)">
+                            <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+                              <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+                            </svg>
+                          </button>
+                        </div>
+                        <div class="space-y-2">
+                          <p>
+                            <strong>Doctor id:</strong>
+                            <span th:text="${appointment.doctorDto.id}">Doctor id</span>
+                          </p>
+                          <p>
+                            <strong>Name:</strong>
+                            <span
+                                    th:text="${appointment.doctorDto.firstName} + ' ' + ${appointment.doctorDto.lastName}">Doctor
+                                  Name</span>
+                          </p>
+                          <p>
+                            <strong>Specialty:</strong>
+                            <span th:text="${appointment.doctorDto.speciality}">Specialty</span>
+                          </p>
+                          <p>
+                            <strong>Qualifications:</strong>
+                            <span th:text="${appointment.doctorDto.qualifications}">Qualifications</span>
+                          </p>
+                          <p>
+                            <strong>Experience:</strong>
+                            <span th:text="${appointment.doctorDto.experienceInYears}">Experience</span>
+                            years
+                          </p>
+                          <p>
+                            <strong>Email:</strong>
+                            <span th:text="${appointment.doctorDto.email}">Email</span>
+                          </p>
+                          <p>
+                            <strong>Mobile:</strong>
+                            <span th:text="${appointment.doctorDto.mobile}">Mobile</span>
+                          </p>
+                          <p>
+                            <strong>Office Address:</strong>
+                            <span th:text="${appointment.doctorDto.officeAddress}">Address</span>
+                          </p>
+                          <p>
+                            <strong>Languages Spoken:</strong>
+                            <span th:text="${appointment.doctorDto.languagesSpoken}">Languages</span>
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-4 font-medium" th:text="${appointment.appointmentDateTime}">
+                  Appointment Date and Time
+                </td>
+                <td class="py-3 px-4" th:text="${appointment.createdAt}">
+                  Appointment created at
+                </td>
+                <td class="py-3 px-4">
+                  <button class="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-sm font-medium py-1 px-3 rounded-md transition-all duration-200 ease-in-out hover:shadow-md flex items-center gap-1"
+                          th:onclick="|window.location.href='@{/web/appointments/delete/{id}(id=${appointment.id})}'|">
+                    <i class="fas fa-trash-alt"></i> Delete
+                  </button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div th:if="${noCompletedAppointments}" class="bg-medical-lightteal p-4 rounded-lg mt-6 border-l-4 border-medical-teal animate-pulse-slow">
+        <p class="text-gray-700 flex items-center gap-2">
+          <i class="fas fa-info-circle text-medical-teal"></i>
+          No completed appointments yet.
+        </p>
+      </div>
+
+      <div th:unless="${noCompletedAppointments}" class="mt-6">
+        <div class="w-full">
+          <h5 class="text-xl font-semibold text-medical-blue mb-3 cursor-pointer flex items-center gap-2 hover:text-medical-dark transition-colors duration-200"
+              onclick="toggleCollapse('completedAppointments')">
+            <i class="fas fa-chevron-down transition-transform duration-200" id="completedAppointmentsIcon"></i>
+            Completed appointments
+          </h5>
+          <p class="text-gray-600 mb-4">
+            Your old appointments are shown here. Click on "Completed appointments" to expand/collapse.
+          </p>
+          <div class="hidden overflow-hidden transition-all duration-300 ease-in-out" id="completedAppointments">
+            <div class="overflow-x-auto">
+              <table class="min-w-full bg-white rounded-lg overflow-hidden border border-medical-lightblue">
+                <thead class="bg-gradient-to-r from-medical-primary to-medical-blue text-white">
+                <tr>
+                  <th class="py-3 px-4 text-left">S.No</th>
+                  <th class="py-3 px-4 text-left">Doctor name</th>
+                  <th class="py-3 px-4 text-left">Doctor speciality</th>
+                  <th class="py-3 px-4 text-left">Doctor details</th>
+                  <th class="py-3 px-4 text-left">Appointment Date and Time</th>
+                  <th class="py-3 px-4 text-left">Appointment created at</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-medical-lightblue">
+                <tr th:each="appointment, iterStat : ${completedAppointments}"
+                    class="hover:bg-medical-lightblue transition-colors duration-200">
+                  <td class="py-3 px-4" th:text="${iterStat.count}">1</td>
+                  <td class="py-3 px-4 font-medium" th:text="${appointment.doctorDto.firstName}">
+                    Doctor name
+                  </td>
+                  <td class="py-3 px-4" th:text="${appointment.doctorDto.speciality}">
+                    Doctor speciality
+                  </td>
+                  <td class="py-3 px-4">
+                    <button class="bg-medical-primary hover:bg-medical-dark text-white text-sm font-medium py-1 px-3 rounded-md transition-all duration-200 ease-in-out hover:shadow-md flex items-center gap-1"
+                            type="button"
+                            th:data-modal-target="'#doctorModal' + ${appointment.doctorDto.id}">
+                      <i class="fas fa-eye"></i> view
+                    </button>
+
+                    <!-- Modal (unchanged as requested) -->
+                    <div class="fixed inset-0 flex items-center justify-center z-50 hidden"
+                         th:id="'doctorModal' + ${appointment.doctorDto.id}"
+                         aria-labelledby="'modalTitle' + ${appointment.doctorDto.id}"
+                         aria-hidden="true">
+                      <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+                      <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto">
+                        <div class="modal-content py-4 text-left px-6">
+                          <div class="flex justify-between items-center pb-3">
+                            <h5 class="text-xl font-bold text-medical-primary"
+                                th:id="'modalTitle' + ${appointment.doctorDto.id}"
+                                th:text="'Details of Dr.' + ${appointment.doctorDto.firstName}">
+                              Doctor details
+                            </h5>
+                            <button class="modal-close cursor-pointer z-50" onclick="closeModal(this)">
+                              <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+                                <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+                              </svg>
+                            </button>
+                          </div>
+                          <div class="space-y-2">
+                            <p>
+                              <strong>Doctor id:</strong>
+                              <span th:text="${appointment.doctorDto.id}">Doctor id</span>
+                            </p>
+                            <p>
+                              <strong>Name:</strong>
+                              <span
+                                      th:text="${appointment.doctorDto.firstName} + ' ' + ${appointment.doctorDto.lastName}">Doctor
+                                    Name</span>
+                            </p>
+                            <p>
+                              <strong>Specialty:</strong>
+                              <span th:text="${appointment.doctorDto.speciality}">Specialty</span>
+                            </p>
+                            <p>
+                              <strong>Qualifications:</strong>
+                              <span th:text="${appointment.doctorDto.qualifications}">Qualifications</span>
+                            </p>
+                            <p>
+                              <strong>Experience:</strong>
+                              <span th:text="${appointment.doctorDto.experienceInYears}">Experience</span>
+                              years
+                            </p>
+                            <p>
+                              <strong>Email:</strong>
+                              <span th:text="${appointment.doctorDto.email}">Email</span>
+                            </p>
+                            <p>
+                              <strong>Mobile:</strong>
+                              <span th:text="${appointment.doctorDto.mobile}">Mobile</span>
+                            </p>
+                            <p>
+                              <strong>Office Address:</strong>
+                              <span th:text="${appointment.doctorDto.officeAddress}">Address</span>
+                            </p>
+                            <p>
+                              <strong>Languages Spoken:</strong>
+                              <span th:text="${appointment.doctorDto.languagesSpoken}">Languages</span>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3 px-4 font-medium" th:text="${appointment.appointmentDateTime}">
+                    Appointment Date and Time
+                  </td>
+                  <td class="py-3 px-4" th:text="${appointment.createdAt}">
+                    Appointment created at
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<footer class="text-center mt-8 text-gray-600 text-sm animate-fade-in">
+  <p class="flex items-center justify-center gap-2">
+    <i class="fas fa-heart text-red-500"></i>
+    © 2025 Medic System. Your health, our commitment.
+    <i class="fas fa-stethoscope text-medical-blue"></i>
+  </p>
+</footer>
+
+<script>
+  // Initialize modal functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    // Open modal when clicking view buttons
+    document.querySelectorAll('[data-modal-target]').forEach(button => {
+      button.addEventListener('click', function() {
+        const target = this.getAttribute('data-modal-target');
+        document.querySelector(target).classList.remove('hidden');
+      });
+    });
+  });
+
+  // Close modal function
+  function closeModal(button) {
+    button.closest('.fixed').classList.add('hidden');
+  }
+
+  // Close modal when clicking outside
+  document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('modal-overlay')) {
+      event.target.closest('.fixed').classList.add('hidden');
+    }
+  });
+
+  // Toggle collapse for completed appointments with icon rotation
+  function toggleCollapse(id) {
+    const element = document.getElementById(id);
+    const icon = document.getElementById(id + 'Icon');
+    element.classList.toggle('hidden');
+    icon.classList.toggle('fa-chevron-down');
+    icon.classList.toggle('fa-chevron-up');
+  }
+</script>
+</body>
+</html>

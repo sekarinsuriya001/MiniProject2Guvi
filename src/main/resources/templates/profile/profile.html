@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Profile</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            medical: {
+              blue: '#1A6FDF',
+              teal: '#0D9488',
+              green: '#10B981',
+              light: '#F0FDF4',
+              dark: '#0F172A',
+              purple: '#7C3AED',
+              pink: '#DB2777'
+            }
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-in-out',
+            'fade-in-up': 'fadeInUp 0.5s ease-out',
+            'pulse-slow': 'pulse 3s infinite',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    .float { animation: float 3s ease-in-out infinite; }
+
+    .card-hover:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .gradient-header {
+      background: linear-gradient(135deg, #0D9488 0%, #1A6FDF 100%);
+    }
+
+    .transition-all {
+      transition-property: all;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 300ms;
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-medical-light to-gray-100 p-4 min-h-screen">
+<div class="max-w-4xl mx-auto animate__animated animate__fadeIn">
+  <div class="w-full">
+    <header class="mb-8">
+      <div class="flex items-center justify-center space-x-3 mb-4 animate__animated animate__fadeInDown">
+        <i class="fas fa-user-circle text-medical-blue text-4xl float"></i>
+        <h4 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-medical-blue to-medical-teal">
+          Patient Profile
+        </h4>
+      </div>
+      <p th:replace="~{general/patient-nav-bar::patient-navigation-bar}">Navigation links</p>
+    </header>
+
+    <section class="space-y-6">
+      <!-- Personal Information -->
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all card-hover">
+        <div class="gradient-header px-6 py-3 flex items-center">
+          <i class="fas fa-id-card text-white mr-3 text-xl animate__animated animate__pulse animate__infinite animate__slower"></i>
+          <h4 class="text-xl font-semibold text-white">Personal Information</h4>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex items-start group">
+            <i class="fas fa-id-badge text-medical-teal mt-1 mr-2 w-6 group-hover:text-medical-blue transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700 block">ID</span>
+              <span class="text-gray-900 font-medium" th:text="${patient.id}"></span>
+            </div>
+          </div>
+          <div class="flex items-start group">
+            <i class="fas fa-user text-medical-teal mt-1 mr-2 w-6 group-hover:text-medical-blue transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700 block">First Name</span>
+              <span class="text-gray-900 font-medium" th:text="${patient.firstName}"></span>
+            </div>
+          </div>
+          <div class="flex items-start group">
+            <i class="fas fa-user text-medical-teal mt-1 mr-2 w-6 group-hover:text-medical-blue transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700 block">Last Name</span>
+              <span class="text-gray-900 font-medium" th:text="${patient.lastName}"></span>
+            </div>
+          </div>
+          <div class="flex items-start group">
+            <i class="fas fa-envelope text-medical-teal mt-1 mr-2 w-6 group-hover:text-medical-blue transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700 block">Email</span>
+              <span class="text-gray-900 font-medium" th:text="${patient.email}"></span>
+            </div>
+          </div>
+          <div class="flex items-start group">
+            <i class="fas fa-phone text-medical-teal mt-1 mr-2 w-6 group-hover:text-medical-blue transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700 block">Mobile</span>
+              <span class="text-gray-900 font-medium" th:text="${patient.mobile}"></span>
+            </div>
+          </div>
+          <div class="flex items-start group">
+            <i class="fas fa-home text-medical-teal mt-1 mr-2 w-6 group-hover:text-medical-blue transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700 block">Address</span>
+              <span class="text-gray-900 font-medium" th:text="${patient.address}"></span>
+            </div>
+          </div>
+          <div class="flex items-start group">
+            <i class="fas fa-birthday-cake text-medical-teal mt-1 mr-2 w-6 group-hover:text-medical-blue transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700 block">Age</span>
+              <span class="text-gray-900 font-medium" th:text="${patient.age}"></span>
+            </div>
+          </div>
+          <div class="flex items-start group">
+            <i class="fas fa-venus-mars text-medical-teal mt-1 mr-2 w-6 group-hover:text-medical-blue transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700 block">Gender</span>
+              <span class="text-gray-900 font-medium" th:text="${patient.gender}"></span>
+            </div>
+          </div>
+          <div class="flex items-start group">
+            <i class="fas fa-tint text-medical-teal mt-1 mr-2 w-6 group-hover:text-medical-blue transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700 block">Blood Group</span>
+              <span class="text-gray-900 font-medium" th:text="${patient.bloodGroup}"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emergency Contact -->
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all card-hover animate__animated animate__fadeInUp">
+        <div class="bg-gradient-to-r from-medical-blue to-medical-purple px-6 py-3 flex items-center">
+          <i class="fas fa-exclamation-triangle text-white mr-3 text-xl animate-pulse-slow"></i>
+          <h4 class="text-xl font-semibold text-white">Emergency Contact</h4>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex items-start group">
+            <i class="fas fa-user-friends text-medical-blue mt-1 mr-2 w-6 group-hover:text-medical-purple transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700 block">Name</span>
+              <span class="text-gray-900 font-medium" th:text="${patient.emergencyContactName}"></span>
+            </div>
+          </div>
+          <div class="flex items-start group">
+            <i class="fas fa-phone-alt text-medical-blue mt-1 mr-2 w-6 group-hover:text-medical-purple transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700 block">Mobile</span>
+              <span class="text-gray-900 font-medium" th:text="${patient.emergencyContactMobile}"></span>
+            </div>
+          </div>
+          <div class="flex items-start group">
+            <i class="fas fa-link text-medical-blue mt-1 mr-2 w-6 group-hover:text-medical-purple transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700 block">Relation</span>
+              <span class="text-gray-900 font-medium" th:text="${patient.emergencyContactRelation}"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Medical History -->
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all card-hover animate__animated animate__fadeInUp">
+        <div class="bg-gradient-to-r from-medical-green to-medical-teal px-6 py-3 flex items-center">
+          <i class="fas fa-notes-medical text-white mr-3 text-xl animate-bounce animate-infinite animate-duration-[3000ms]"></i>
+          <h4 class="text-xl font-semibold text-white">Medical History</h4>
+        </div>
+        <div class="p-6 space-y-4">
+          <div class="flex items-start group">
+            <i class="fas fa-diagnoses text-medical-green mt-1 mr-3 w-6 group-hover:text-medical-teal transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700">Previous Diagnoses</span>
+              <p class="text-gray-900 mt-1 whitespace-pre-line bg-gray-50 p-3 rounded-lg" th:text="${patient.previousDiagnoses} ?: 'No previous diagnoses recorded'"></p>
+            </div>
+          </div>
+          <div class="flex items-start group">
+            <i class="fas fa-procedures text-medical-green mt-1 mr-3 w-6 group-hover:text-medical-teal transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700">Surgeries</span>
+              <p class="text-gray-900 mt-1 whitespace-pre-line bg-gray-50 p-3 rounded-lg" th:text="${patient.surgeries} ?: 'No surgeries recorded'"></p>
+            </div>
+          </div>
+          <div class="flex items-start group">
+            <i class="fas fa-allergies text-medical-green mt-1 mr-3 w-6 group-hover:text-medical-teal transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700">Allergies</span>
+              <p class="text-gray-900 mt-1 whitespace-pre-line bg-gray-50 p-3 rounded-lg" th:text="${patient.allergies} ?: 'No known allergies'"></p>
+            </div>
+          </div>
+          <div class="flex items-start group">
+            <i class="fas fa-syringe text-medical-green mt-1 mr-3 w-6 group-hover:text-medical-teal transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700">Vaccination History</span>
+              <p class="text-gray-900 mt-1 whitespace-pre-line bg-gray-50 p-3 rounded-lg" th:text="${patient.vaccinationHistory} ?: 'No vaccination history recorded'"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lifestyle Conditions -->
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden transition-all card-hover animate__animated animate__fadeInUp">
+        <div class="bg-gradient-to-r from-medical-dark to-medical-pink px-6 py-3 flex items-center">
+          <i class="fas fa-heartbeat text-white mr-3 text-xl animate-pulse"></i>
+          <h4 class="text-xl font-semibold text-white">Lifestyle Conditions</h4>
+        </div>
+        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="flex items-start group">
+            <i class="fas fa-smoking text-medical-dark mt-1 mr-2 w-6 group-hover:text-medical-pink transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700 block">Smoker</span>
+              <span class="text-gray-900 font-medium" th:text="${patient.isSmoker} ? 'Yes' : 'No'"></span>
+            </div>
+          </div>
+          <div class="flex items-start group">
+            <i class="fas fa-wine-glass-alt text-medical-dark mt-1 mr-2 w-6 group-hover:text-medical-pink transition-all"></i>
+            <div>
+              <span class="font-medium text-gray-700 block">Consumes Alcohol</span>
+              <span class="text-gray-900 font-medium" th:text="${patient.consumesAlcohol} ? 'Yes' : 'No'"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+<script>
+  // Add some interactive animations
+  document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.card-hover');
+
+    cards.forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.classList.add('shadow-xl');
+      });
+
+      card.addEventListener('mouseleave', function() {
+        this.classList.remove('shadow-xl');
+      });
+    });
+
+    // Animate elements when they come into view
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('section > div').forEach(el => {
+      observer.observe(el);
+    });
+  });
+</script>
+</body>
+</html>

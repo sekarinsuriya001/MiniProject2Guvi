@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Patient Navigation Bar</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                medical: {
+                  blue: '#2563EB',    // new brighter blue
+                  teal: '#14B8A6',
+                  green: '#22C55E',
+                  light: '#ECFDF5',
+                  dark: '#1E293B',
+                  pink: '#EC4899',
+                  violet: '#8B5CF6'
+                }
+              }
+            }
+          }
+        };
+    </script>
+</head>
+
+<body class="bg-medical-light">
+<div th:fragment="patient-navigation-bar">
+    <nav class="flex justify-center md:justify-end items-center bg-gradient-to-r from-medical-light to-medical-blue shadow-lg p-4 rounded-lg animate__animated animate__fadeInDown">
+        <a th:href="@{/web/patients/home}" class="mx-2 px-4 py-2 rounded-full text-medical-dark hover:bg-medical-blue hover:text-white transition-all duration-300 flex items-center gap-2 group">
+            <i class="fas fa-house-user group-hover:animate__animated group-hover:animate__bounceIn"></i> Home
+        </a>
+        <a th:href="@{/web/appointments/list}" class="mx-2 px-4 py-2 rounded-full text-medical-dark hover:bg-medical-teal hover:text-white transition-all duration-300 flex items-center gap-2 group">
+            <i class="fas fa-notes-medical group-hover:animate__animated group-hover:animate__heartBeat"></i> Appointments
+        </a>
+        <a th:href="@{/web/medications/list}" class="mx-2 px-4 py-2 rounded-full text-medical-dark hover:bg-medical-green hover:text-white transition-all duration-300 flex items-center gap-2 group">
+            <i class="fas fa-capsules group-hover:animate__animated group-hover:animate__rubberBand"></i> Medications
+        </a>
+        <a th:href="@{/web/patients/profile}" class="mx-2 px-4 py-2 rounded-full text-medical-dark hover:bg-medical-violet hover:text-white transition-all duration-300 flex items-center gap-2 group">
+            <i class="fas fa-address-card group-hover:animate__animated group-hover:animate__zoomIn"></i> Profile
+        </a>
+        <a th:href="@{/web/patients/confirm-logout}" class="mx-2 px-4 py-2 rounded-full text-medical-dark hover:bg-red-500 hover:text-white transition-all duration-300 flex items-center gap-2 group">
+            <i class="fas fa-door-open group-hover:animate__animated group-hover:animate__wobble"></i> Logout
+        </a>
+    </nav>
+</div>
+</body>
+</html>

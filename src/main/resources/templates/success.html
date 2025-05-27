@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Success</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'success-green': '#22c55e',
+            'success-bg': '#ecfdf5',
+            'success-dark': '#065f46'
+          },
+          animation: {
+            bounceOnce: 'bounce 1s ease-in-out 1',
+            fadeIn: 'fadeIn 1s ease-out forwards'
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: 0, transform: 'translateY(20px)' },
+              '100%': { opacity: 1, transform: 'translateY(0)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-green-100 via-white to-green-50 flex items-center justify-center p-4">
+<div class="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-2xl animate-fadeIn">
+  <div class="w-full">
+    <header>
+      <nav class="flex justify-end">
+        <a th:href="@{/web/patients/home}" class="text-green-700 hover:text-green-900 ml-3 flex items-center transition duration-200 ease-in-out">
+          <i class="fa-solid fa-house-chimney mr-2"></i> Home
+        </a>
+      </nav>
+      <div class="flex items-center mt-6">
+        <i class="fas fa-circle-check text-success-green text-4xl mr-3 animate-bounceOnce"></i>
+        <h4 class="text-success-green text-3xl font-bold">Action Successful!</h4>
+      </div>
+    </header>
+
+    <section class="mt-6 p-6 bg-success-bg border-l-4 border-success-green text-success-dark rounded-xl shadow-sm transition duration-300 ease-in-out">
+      <p th:text="${message}" class="text-lg font-medium">The action has been completed successfully.</p>
+    </section>
+  </div>
+</div>
+</body>
+</html>

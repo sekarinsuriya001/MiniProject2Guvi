@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Error</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'error-red': '#dc3545',
+            'error-light': '#fdecea',
+            'error-dark': '#721c24',
+            'soft-red': '#fff5f5',
+            'deep-red': '#b71c1c'
+          },
+          animation: {
+            fadeIn: 'fadeIn 0.8s ease-out forwards',
+            shake: 'shake 0.5s ease-in-out',
+            pulseSlow: 'pulse 2s infinite'
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: 0, transform: 'translateY(20px)' },
+              '100%': { opacity: 1, transform: 'translateY(0)' }
+            },
+            shake: {
+              '0%, 100%': { transform: 'translateX(0)' },
+              '20%, 60%': { transform: 'translateX(-6px)' },
+              '40%, 80%': { transform: 'translateX(6px)' }
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+
+<body class="bg-gradient-to-br from-soft-red via-white to-red-100 p-4 min-h-screen flex items-center justify-center">
+<div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-2xl animate-fadeIn">
+  <div class="w-full">
+    <header>
+      <nav class="flex justify-end">
+        <a th:href="@{/web/patients/home}" class="text-error-red hover:text-deep-red ml-3 flex items-center transition-colors duration-300">
+          <i class="fa-solid fa-house-user mr-2 text-lg"></i> Return Home
+        </a>
+      </nav>
+      <div class="flex items-center mt-6">
+        <i class="fas fa-triangle-exclamation text-error-red text-4xl mr-4 animate-shake"></i>
+        <h4 class="text-error-red text-3xl font-bold">Oops! Something Went Wrong</h4>
+      </div>
+    </header>
+
+    <section class="mt-6 p-5 bg-error-light border-l-4 border-error-red text-error-dark rounded-lg shadow-sm">
+      <p th:text="${message}" class="font-medium">
+        The action could not be completed due to an unexpected error. Please try again later or contact support.
+      </p>
+    </section>
+  </div>
+</div>
+</body>
+</html>
