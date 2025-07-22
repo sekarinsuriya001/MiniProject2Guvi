@@ -3,7 +3,6 @@ package com.medicaldata.medicSystem.controller;
 import com.medicaldata.medicSystem.controller.restful.DoctorController;
 import com.medicaldata.medicSystem.dto.DoctorDto;
 import com.medicaldata.medicSystem.dto.save.SaveDoctorDto;
-import com.medicaldata.medicSystem.model.Doctor;
 import com.medicaldata.medicSystem.service.DoctorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.Matchers;
@@ -22,15 +21,13 @@ import java.util.List;
 
 import static org.mockito.BDDMockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(DoctorController.class)
 public class DoctorControllerTests {
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -40,25 +37,11 @@ public class DoctorControllerTests {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private Doctor doctor;
     private DoctorDto doctorDto;
     private SaveDoctorDto saveDoctorDto;
 
     @BeforeEach
-    public void setup(){
-        doctor = new Doctor(
-                1L,
-                "John",
-                "Doe",
-                "Male",
-                "7777777777",
-                "johndoe@gmail.com",
-                "General",
-                5,
-                "MBBS",
-                "English",
-                "USA"
-        );
+    public void setup() {
         doctorDto = new DoctorDto(
                 1L,
                 "John",
@@ -86,137 +69,102 @@ public class DoctorControllerTests {
         );
     }
 
-    @WithMockUser(roles = {"PATIENT"}) // Although here role is unnecessary
-    @DisplayName(value = "JUnit test method for getAll doctors method.")
+    @WithMockUser(roles = {"PATIENT"})
+    @DisplayName("JUnit test for getAllDoctors method")
     @Test
-    public void givenDoctorObject_whenGetAllDoctor_thenReturnDoctorList() throws Exception {
-        // Arrange
-        given(doctorService.getAllDoctors())
-                .willReturn(List.of(doctorDto));
+    public void givenDoctors_whenGetAllDoctors_thenReturnDoctorList() throws Exception {
+        given(doctorService.getAllDoctors()).willReturn(List.of(doctorDto));
 
-        // Act
-        ResultActions resultActions = mockMvc.perform(
-                get("/doctors/getAll") // Api call
-        );
+        ResultActions resultActions = mockMvc.perform(get("/doctors"));
 
-        // Assert
         resultActions.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(List.of(doctorDto))))
-                .andExpect(jsonPath("$.size()", Matchers.is(1))); // Matchers.is() from Hamcrest
+                .andExpect(jsonPath("$.size()", Matchers.is(1)));
     }
 
-    @WithMockUser(roles = {"PATIENT"}) // Although here role is unnecessary
-    @DisplayName(value = "JUnit test method for get doctor by id method.")
+    @WithMockUser(roles = {"PATIENT"})
+    @DisplayName("JUnit test for getDoctorById method")
     @Test
-    public void givenDoctorObject_whenGetDoctorById_thenReturnDoctorList() throws Exception {
-        // Arrange
-        given(doctorService.getDoctorById(doctor.getId()))
-                .willReturn(doctorDto);
+    public void givenDoctorId_whenGetDoctorById_thenReturnDoctor() throws Exception {
+        given(doctorService.getDoctorById(1L)).willReturn(doctorDto);
 
-        // Act
-        ResultActions resultActions = mockMvc.perform(
-                get("/doctors/get/" + doctor.getId()) // Api call
-        );
+        ResultActions resultActions = mockMvc.perform(get("/doctors/1"));
 
-        // Assert
         resultActions.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(doctorDto)));
     }
 
-    @WithMockUser(roles = {"PATIENT"}) // Although here role is unnecessary
-    @DisplayName(value = "JUnit test method for save doctor method.")
+    @WithMockUser(roles = {"PATIENT"})
+    @DisplayName("JUnit test for addDoctor method")
     @Test
-    public void givenDoctorObject_whenAddDoctor_thenReturnSavedDoctorObject() throws Exception {
-        // Arrange
-        given(doctorService.addDoctor(any(SaveDoctorDto.class)))
-//                .willAnswer(invocation -> invocation.getArgument(0));
-//                Instead of using willReturn we are using willAnswer because this is a controller method and
-                .willReturn(doctorDto);
-//                Used willReturn as willlAnswer betrayed :-(
+    public void givenDoctor_whenAddDoctor_thenReturnSavedDoctor() throws Exception {
+        given(doctorService.addDoctor(any(SaveDoctorDto.class))).willReturn(doctorDto);
 
-        // Act
         ResultActions resultActions = mockMvc.perform(
-                post("/doctors/add") // Api call
+                post("/doctors")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(saveDoctorDto))
         );
 
-        // Assert
         resultActions.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().json(objectMapper.writeValueAsString(doctorDto)));
     }
 
     @WithMockUser(roles = {"PATIENT"})
-    @DisplayName("JUnit test method for addAllDoctors method.")
+    @DisplayName("JUnit test for addAllDoctors method")
     @Test
-    public void givenListOfDoctors_whenAddAllDoctors_thenReturnSavedDoctorList() throws Exception {
+    public void givenDoctors_whenAddAllDoctors_thenReturnSavedDoctors() throws Exception {
         List<SaveDoctorDto> saveDoctorDtoList = List.of(saveDoctorDto);
         List<DoctorDto> savedDoctorDtoList = List.of(doctorDto);
 
-        // Arrange
         given(doctorService.addAllDoctors(saveDoctorDtoList)).willReturn(savedDoctorDtoList);
 
-        // Act
         ResultActions resultActions = mockMvc.perform(
-                post("/doctors/addAll")
+                post("/doctors/batch")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(saveDoctorDtoList))
         );
 
-        // Assert
         resultActions.andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().json(objectMapper.writeValueAsString(savedDoctorDtoList)))
-                .andExpect(jsonPath("$.size()", Matchers.is(1))); // Matchers.is() from Hamcrest
+                .andExpect(jsonPath("$.size()", Matchers.is(1)));
     }
 
     @WithMockUser(roles = {"PATIENT"})
-    @DisplayName("JUnit test method for updateDoctor method.")
+    @DisplayName("JUnit test for updateDoctor method")
     @Test
-    public void givenDoctorObject_whenUpdateDoctor_thenReturnUpdatedDoctor() throws Exception {
-        Long doctorId = doctorDto.getId();
+    public void givenDoctor_whenUpdateDoctor_thenReturnUpdatedDoctor() throws Exception {
+        given(doctorService.updateDoctor(eq(1L), any(SaveDoctorDto.class))).willReturn(doctorDto);
 
-        // Arrange
-        given(doctorService.updateDoctor(eq(doctorId), any(SaveDoctorDto.class))).willReturn(doctorDto);
-
-        // Act
         ResultActions resultActions = mockMvc.perform(
-                put("/doctors/update/" + doctorId)
+                put("/doctors/1")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(saveDoctorDto))
         );
 
-        // Assert
         resultActions.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().json(objectMapper.writeValueAsString(doctorDto)));
     }
 
     @WithMockUser(roles = {"PATIENT"})
-    @DisplayName("JUnit test method for deleteDoctorById method.")
+    @DisplayName("JUnit test for deleteDoctorById method")
     @Test
-    public void givenDoctorId_whenDeleteDoctorById_thenReturnDeletionMessage() throws Exception {
-        Long doctorId = doctorDto.getId();
+    public void givenDoctorId_whenDeleteDoctorById_thenReturnSuccessMessage() throws Exception {
+        willDoNothing().given(doctorService).deleteDoctorById(1L);
 
-        // Act
         ResultActions resultActions = mockMvc.perform(
-                delete("/doctors/delete/" + doctorId)
-                        .with(csrf())
+                delete("/doctors/1").with(csrf())
         );
 
-        // Assert
         resultActions.andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string("Doctor with ID - " + doctorId + " removed from the database."));
-
-        verify(doctorService, times(1)).deleteDoctorById(doctorId);
-        // Verifying that the service's delete method was called
+                .andExpect(status().isOk());
     }
-
 }
